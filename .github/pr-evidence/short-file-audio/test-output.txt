@@ -1,8 +1,9 @@
 FluidVoice file transcription verification
 Version: 1.6.12-beta.1 (29), comparison starts at commit ad1d1ff0.
+Final tested revision: aaf40bee20d79a23f7d0f3c9f33ef1e7d5aa26a1.
 Native XCTest summaries. Failed tests and failed assertions are counted separately.
 
-Before fix: five service regression tests
+Before buffered-path fix: five service regression tests
 Tests: 5; passed: 2; failed: 3; skipped: 0.
 Test Case '-[FluidDictationIntegrationTests.FileTranscriptionAudioTests testEmptyFileDoesNotCreatePaddedInference]' passed.
 Test Case '-[FluidDictationIntegrationTests.FileTranscriptionAudioTests testFilesAtOrAboveOneSecondAreNotPadded]' passed.
@@ -15,8 +16,8 @@ Test Case '-[FluidDictationIntegrationTests.FileTranscriptionAudioTests testSubs
 Tests/FluidDictationIntegrationTests/FileTranscriptionAudioTests.swift:51: error: -[FluidDictationIntegrationTests.FileTranscriptionAudioTests testSubsecondTailAfterFullChunkStillReachesProvider] : XCTAssertEqual failed: ("1") is not equal to ("2")
 Test Case '-[FluidDictationIntegrationTests.FileTranscriptionAudioTests testSubsecondTailAfterFullChunkStillReachesProvider]' failed.
 
-After fix: service, format and conversion tests
-Tests: 15; passed: 15; failed: 0; skipped: 0.
+Native-path regression control: inference seam and tests, without EOF padding
+Tests: 19; passed: 18; failed: 1; skipped: 0.
 Test Case '-[FluidDictationIntegrationTests.AudioBufferConverterTests testLocalAPIAudioChunkReaderBoundsMemoryAndPreservesFinalChunk]' passed.
 Test Case '-[FluidDictationIntegrationTests.AudioBufferConverterTests testLocalAPIExtensionlessUploadUsesTemporaryWAVAndCleansUp]' passed.
 Test Case '-[FluidDictationIntegrationTests.AudioBufferConverterTests testMonoFloatFastPathPreservesSamples]' passed.
@@ -26,6 +27,12 @@ Test Case '-[FluidDictationIntegrationTests.AudioBufferConverterTests testStereo
 Test Case '-[FluidDictationIntegrationTests.AudioBufferConverterTests testStereoDownmixPreservesMatchingChannels]' passed.
 Test Case '-[FluidDictationIntegrationTests.FileTranscriptionAudioTests testEmptyFileDoesNotCreatePaddedInference]' passed.
 Test Case '-[FluidDictationIntegrationTests.FileTranscriptionAudioTests testFilesAtOrAboveOneSecondAreNotPadded]' passed.
+Test Case '-[FluidDictationIntegrationTests.FileTranscriptionAudioTests testNemotronNativeFileHandlesEmptyAndBoundaryInputs]' passed.
+Test Case '-[FluidDictationIntegrationTests.FileTranscriptionAudioTests testNemotronNativeFileKeepsAudioAcrossBatches]' passed.
+Tests/FluidDictationIntegrationTests/FileTranscriptionAudioTests.swift:85: error: -[FluidDictationIntegrationTests.FileTranscriptionAudioTests testNemotronNativeFilePadsSubsecondInput] : XCTAssertEqual failed: ("0") is not equal to ("1") - Mode: offline, frames: 1
+Tests/FluidDictationIntegrationTests/FileTranscriptionAudioTests.swift:86: error: -[FluidDictationIntegrationTests.FileTranscriptionAudioTests testNemotronNativeFilePadsSubsecondInput] : XCTUnwrap failed: expected non-nil value of type "Array<Float>"
+Test Case '-[FluidDictationIntegrationTests.FileTranscriptionAudioTests testNemotronNativeFilePadsSubsecondInput]' failed.
+Test Case '-[FluidDictationIntegrationTests.FileTranscriptionAudioTests testNemotronNativeFileRequiresReadyProvider]' passed.
 Test Case '-[FluidDictationIntegrationTests.FileTranscriptionAudioTests testSubsecondFilesPreserveSamplesAndAddOnlyTrailingSilence]' passed.
 Test Case '-[FluidDictationIntegrationTests.FileTranscriptionAudioTests testSubsecondSilenceIsPassedThroughWithoutChangingDuration]' passed.
 Test Case '-[FluidDictationIntegrationTests.FileTranscriptionAudioTests testSubsecondTailAfterFullChunkStillReachesProvider]' passed.
@@ -33,15 +40,38 @@ Test Case '-[FluidDictationIntegrationTests.SupportedFileExtensionsTests testCom
 Test Case '-[FluidDictationIntegrationTests.SupportedFileExtensionsTests testOnlyDecodableExtensionsAreAccepted]' passed.
 Test Case '-[FluidDictationIntegrationTests.SupportedFileExtensionsTests testWhatsAppOpusExtensionsAreAccepted]' passed.
 
-Before fix: real Whisper Tiny
+Final fix: service, native Nemotron file path, format and conversion tests
+Tests: 19; passed: 19; failed: 0; skipped: 0.
+Test Case '-[FluidDictationIntegrationTests.AudioBufferConverterTests testLocalAPIAudioChunkReaderBoundsMemoryAndPreservesFinalChunk]' passed.
+Test Case '-[FluidDictationIntegrationTests.AudioBufferConverterTests testLocalAPIExtensionlessUploadUsesTemporaryWAVAndCleansUp]' passed.
+Test Case '-[FluidDictationIntegrationTests.AudioBufferConverterTests testMonoFloatFastPathPreservesSamples]' passed.
+Test Case '-[FluidDictationIntegrationTests.AudioBufferConverterTests testStereoDownmixAndResampleIncludesRightChannel]' passed.
+Test Case '-[FluidDictationIntegrationTests.AudioBufferConverterTests testStereoDownmixIncludesLeftChannel]' passed.
+Test Case '-[FluidDictationIntegrationTests.AudioBufferConverterTests testStereoDownmixIncludesRightChannel]' passed.
+Test Case '-[FluidDictationIntegrationTests.AudioBufferConverterTests testStereoDownmixPreservesMatchingChannels]' passed.
+Test Case '-[FluidDictationIntegrationTests.FileTranscriptionAudioTests testEmptyFileDoesNotCreatePaddedInference]' passed.
+Test Case '-[FluidDictationIntegrationTests.FileTranscriptionAudioTests testFilesAtOrAboveOneSecondAreNotPadded]' passed.
+Test Case '-[FluidDictationIntegrationTests.FileTranscriptionAudioTests testNemotronNativeFileHandlesEmptyAndBoundaryInputs]' passed.
+Test Case '-[FluidDictationIntegrationTests.FileTranscriptionAudioTests testNemotronNativeFileKeepsAudioAcrossBatches]' passed.
+Test Case '-[FluidDictationIntegrationTests.FileTranscriptionAudioTests testNemotronNativeFilePadsSubsecondInput]' passed.
+Test Case '-[FluidDictationIntegrationTests.FileTranscriptionAudioTests testNemotronNativeFileRequiresReadyProvider]' passed.
+Test Case '-[FluidDictationIntegrationTests.FileTranscriptionAudioTests testSubsecondFilesPreserveSamplesAndAddOnlyTrailingSilence]' passed.
+Test Case '-[FluidDictationIntegrationTests.FileTranscriptionAudioTests testSubsecondSilenceIsPassedThroughWithoutChangingDuration]' passed.
+Test Case '-[FluidDictationIntegrationTests.FileTranscriptionAudioTests testSubsecondTailAfterFullChunkStillReachesProvider]' passed.
+Test Case '-[FluidDictationIntegrationTests.SupportedFileExtensionsTests testCommonFormatsRemainAccepted]' passed.
+Test Case '-[FluidDictationIntegrationTests.SupportedFileExtensionsTests testOnlyDecodableExtensionsAreAccepted]' passed.
+Test Case '-[FluidDictationIntegrationTests.SupportedFileExtensionsTests testWhatsAppOpusExtensionsAreAccepted]' passed.
+
+Original real Whisper Tiny check: before fix
 Tests: 1; passed: 0; failed: 1; skipped: 0.
 REAL_SHORT_AUDIO duration=0.480625 model=whisper-tiny-Q8_0.gguf transcript=""
 
-After fix: real Whisper Tiny
+Original real Whisper Tiny check: after buffered-path fix
 Tests: 1; passed: 1; failed: 0; skipped: 0.
 REAL_SHORT_AUDIO duration=0.480625 model=whisper-tiny-Q8_0.gguf transcript="Yes."
 
 Source: native xcresult summaries and selected test-log lines.
 Absolute source-path prefixes and elapsed test timings are omitted from the excerpts.
-The real-model check uses generated speech. No microphone or file-import UI was tested.
-The full suite and Intel runtime were not tested.
+Native Nemotron file tests use synthetic WAVs and injected inference; no real Nemotron models were loaded.
+The earlier real Whisper check uses generated speech. Its buffered file path is unchanged by the native-path followup.
+The full suite, Intel runtime, microphone and file-import UI were not tested.
