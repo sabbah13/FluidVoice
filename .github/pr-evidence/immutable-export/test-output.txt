@@ -1,0 +1,36 @@
+FluidVoice native regression evidence
+Version: 1.6.13-beta.1 (31). Public source: 6150956bef129fc1a413684db4c0eac61da078a5.
+macOS 26.6.2, Apple Silicon arm64, Xcode 27.0.
+Synthetic fixtures only. No model inference, microphone, save-panel UI or Intel runtime checks.
+
+Before fix: original production behavior with regression fixtures
+Tests: 6; passed: 4; failed: 2; skipped: 0.
+Test Case '-[FluidDictationIntegrationTests.FileExportTests testConcurrentDocumentsKeepTheirOwnPayloads]' failed.
+Test Case '-[FluidDictationIntegrationTests.FileExportTests testDocumentRetainsCapturedResultAndFormat]' passed.
+Test Case '-[FluidDictationIntegrationTests.FileExportTests testExportLeavesExistingTemporaryFilesUntouched]' failed.
+Test Case '-[FluidDictationIntegrationTests.FileExportTests testJSONEncodingFailureReachesDocumentWriter]' passed.
+Test Case '-[FluidDictationIntegrationTests.FileExportTests testJSONPreservesExistingSchemaAndFormatting]' passed.
+Test Case '-[FluidDictationIntegrationTests.FileExportTests testTextPreservesExistingMetadataAndUTF8]' passed.
+
+After fix: fc29cac6c3f0e3df0c5042a49e6d7d41462eeee4
+Tests: 6; passed: 6; failed: 0; skipped: 0.
+Test Case '-[FluidDictationIntegrationTests.FileExportTests testConcurrentDocumentsKeepTheirOwnPayloads]' passed.
+Test Case '-[FluidDictationIntegrationTests.FileExportTests testDocumentRetainsCapturedResultAndFormat]' passed.
+Test Case '-[FluidDictationIntegrationTests.FileExportTests testExportLeavesExistingTemporaryFilesUntouched]' passed.
+Test Case '-[FluidDictationIntegrationTests.FileExportTests testJSONEncodingFailureReachesDocumentWriter]' passed.
+Test Case '-[FluidDictationIntegrationTests.FileExportTests testJSONPreservesExistingSchemaAndFormatting]' passed.
+Test Case '-[FluidDictationIntegrationTests.FileExportTests testTextPreservesExistingMetadataAndUTF8]' passed.
+
+Additional native compatibility/recovery checks on the same fixed head
+Tests: 3; passed: 3; failed: 0; skipped: 0.
+Test Case '-[FluidDictationIntegrationTests.SpeakerLabeledTranscriptionPolicyTests testHistoryEntryKeepsSpeakerLabelingDetails]' passed.
+Test Case '-[FluidDictationIntegrationTests.SpeakerLabeledTranscriptionPolicyTests testOlderResultWithoutSpeakerLabelingDetailsStillDecodes]' passed.
+Test Case '-[FluidDictationIntegrationTests.SpeakerLabeledTranscriptionPolicyTests testResultRoundTripsPersistentSpeakerLabelingDetails]' passed.
+
+Observed before: fixed-name sentinel files were deleted, and 128 concurrent documents produced incorrect payloads and missing-file errors.
+Observed after: sentinel bytes remain intact and each concurrent wrapper contains its own document bytes. JSON/TXT bytes and encoding errors match the existing contract.
+The native run supplied the sandbox marker only through TEST_RUNNER_FLUID_EXPORT_TEST_SANDBOX_TEMP, verifying the transport added to the macOS CI command.
+
+Source: completed native XCTest logs and xcresult summaries.
+Excerpts omit absolute paths and elapsed timings. Counts describe test methods, not individual assertions.
+The baseline includes regression fixtures and a neutral writer forwarding method; it contains neither production fix.

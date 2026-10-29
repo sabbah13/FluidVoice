@@ -1,0 +1,33 @@
+FluidVoice native regression evidence
+Version: 1.6.13-beta.1 (31). Public source: 6150956bef129fc1a413684db4c0eac61da078a5.
+macOS 26.6.2, Apple Silicon arm64, Xcode 27.0.
+Synthetic fixtures only. No model inference, microphone, save-panel UI or Intel runtime checks.
+
+Before fix: original production behavior with regression fixtures
+Tests: 5; passed: 3; failed: 2; skipped: 0.
+Test Case '-[FluidDictationIntegrationTests.MeetingRecoveryTests testCatalogKeepsValidSessionsWhenAnotherManifestIsCorrupt]' passed.
+Test Case '-[FluidDictationIntegrationTests.MeetingRecoveryTests testCatalogThrowsWhenEveryManifestIsCorrupt]' failed.
+Test Case '-[FluidDictationIntegrationTests.MeetingRecoveryTests testCatalogWithStaleIndexAndMissingManifestsIsEmpty]' passed.
+Test Case '-[FluidDictationIntegrationTests.MeetingRecoveryTests testHistorySnapshotRetainsRowsWhenStoredManifestBecomesCorrupt]' failed.
+Test Case '-[FluidDictationIntegrationTests.MeetingRecoveryTests testNewCatalogIsEmpty]' passed.
+
+After fix: 369e105b314e56891fb2e8f9538288c6761ea132
+Tests: 5; passed: 5; failed: 0; skipped: 0.
+Test Case '-[FluidDictationIntegrationTests.MeetingRecoveryTests testCatalogKeepsValidSessionsWhenAnotherManifestIsCorrupt]' passed.
+Test Case '-[FluidDictationIntegrationTests.MeetingRecoveryTests testCatalogThrowsWhenEveryManifestIsCorrupt]' passed.
+Test Case '-[FluidDictationIntegrationTests.MeetingRecoveryTests testCatalogWithStaleIndexAndMissingManifestsIsEmpty]' passed.
+Test Case '-[FluidDictationIntegrationTests.MeetingRecoveryTests testHistorySnapshotRetainsRowsWhenStoredManifestBecomesCorrupt]' passed.
+Test Case '-[FluidDictationIntegrationTests.MeetingRecoveryTests testNewCatalogIsEmpty]' passed.
+
+Additional native compatibility/recovery checks on the same fixed head
+Tests: 3; passed: 3; failed: 0; skipped: 0.
+Test Case '-[FluidDictationIntegrationTests.MeetingRecoveryTests testLoadRecoverableClassification]' passed.
+Test Case '-[FluidDictationIntegrationTests.MeetingHistorySnapshotTests testRapidCorrectionsCannotBeOverwrittenByAnOlderHistoryRead]' passed.
+Test Case '-[FluidDictationIntegrationTests.MeetingHistorySnapshotTests testSnapshotKeepsRowsDuringRefreshAndFailureThenRecovers]' passed.
+
+Observed before: all three catalog APIs silently accepted invalid manifests; the real history snapshot cleared its previously loaded row and showed no error.
+Observed after: an all-failure catalog throws, the snapshot retains its row and reports failure, retry after repair succeeds. Empty/stale catalogs and healthy neighbors preserve existing behavior.
+
+Source: completed native XCTest logs and xcresult summaries.
+Excerpts omit absolute paths and elapsed timings. Counts describe test methods, not individual assertions.
+The baseline includes regression fixtures and a neutral writer forwarding method; it contains neither production fix.
